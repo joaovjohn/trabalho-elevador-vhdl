@@ -19,17 +19,17 @@ entity elevador is
 end elevador ; 
 
 architecture arch of elevador is
-  type tipo_estado is ( indoAndarUM, indoAndarDOIS, indoAndarTRES, indoAndarQUATRO);
+  type tipoEstado is ( indoAndarUM, indoAndarDOIS, indoAndarTRES, indoAndarQUATRO);
   signal y : tipoEstado;
 
   function subir (andar_atual : in tipoEstado) return tipoEstado is
     begin
-      if andar_atual = andarUM then
-        return andarDOIS;
-      elsif andar_atual = andarDOIS then
-        return andarTRES;
-      elsif andar_atual = andarTRES then
-        return andarQUATRO;
+      if andar_atual = indoAndarUM then
+        return indoAndarDOIS;
+      elsif andar_atual = indoAndarDOIS then
+        return indoAndarTRES;
+      elsif andar_atual = indoAndarTRES then
+        return indoAndarQUATRO;
       else
         return andar_atual;
       end if;
@@ -37,12 +37,12 @@ architecture arch of elevador is
 
   function descer (andar_atual : in tipoEstado) return tipoEstado is
     begin
-      if andar_atual = andarQUATRO then
-        return andarTRES;
-      elsif andar_atual = andarTRES then
-        return andarDOIS;
-      elsif andar_atual = andarDOIS then
-        return andarUM;
+      if andar_atual = indoAndarQUATRO then
+        return indoAndarTRES;
+      elsif andar_atual = indoAndarTRES then
+        return indoAndarDOIS;
+      elsif andar_atual = indoAndarDOIS then
+        return indoAndarUM;
       else
         return andar_atual;
       end if;
@@ -52,7 +52,7 @@ begin
   process(reset, clock)
     begin
         if reset = '1' then
-            y <= andarUM;
+            y <= indoAndarUM;
             parado <= '1';
         elsif clock'event and clock = '1' then
             if (andarUM = '1' and andarDOIS = '0' and andarTRES = '0' and andarQUATRO = '0') then
@@ -65,7 +65,7 @@ begin
             elsif (andarUM = '0' and andarDOIS = '1' and andarTRES = '0' and andarQUATRO = '0') then
                 if (y /= indoAndarDOIS) then
                     parado <= '0';
-                    if(y = andarUM) then
+                    if(y = indoAndarUM) then
                         y <= subir(y);
                     else 
                         y <= descer(y);
@@ -92,13 +92,14 @@ begin
                     parado <= '1';
                 end if;
             end if;
+        end if;
   end process;
   process(y)
     begin
-      andarUM <= '0';    
-      andarDOIS <= '0';
-      andarTRES <= '0';
-      andarQUATRO <= '0';
+      outAndarUM <= '0';    
+      outAndarDOIS <= '0';
+      outAndarTRES <= '0';
+      outAndarQUATRO <= '0';
         if y = indoAndarUM then
             outAndarUM <= '1';    
         elsif y = indoAndarDOIS then

@@ -41,17 +41,17 @@ entity elevador is
 end elevador ; 
 
 architecture arch of elevador is
-  type tipo_estado is ( indoAndarUM, indoAndarDOIS, indoAndarTRES, indoAndarQUATRO);
+  type tipoEstado is ( indoAndarUM, indoAndarDOIS, indoAndarTRES, indoAndarQUATRO);
   signal y : tipoEstado;
 
   function subir (andar_atual : in tipoEstado) return tipoEstado is
     begin
-      if andar_atual = andarUM then
-        return andarDOIS;
-      elsif andar_atual = andarDOIS then
-        return andarTRES;
-      elsif andar_atual = andarTRES then
-        return andarQUATRO;
+      if andar_atual = indoAndarUM then
+        return indoAndarDOIS;
+      elsif andar_atual = indoAndarDOIS then
+        return indoAndarTRES;
+      elsif andar_atual = indoAndarTRES then
+        return indoAndarQUATRO;
       else
         return andar_atual;
       end if;
@@ -59,12 +59,12 @@ architecture arch of elevador is
 
   function descer (andar_atual : in tipoEstado) return tipoEstado is
     begin
-      if andar_atual = andarQUATRO then
-        return andarTRES;
-      elsif andar_atual = andarTRES then
-        return andarDOIS;
-      elsif andar_atual = andarDOIS then
-        return andarUM;
+      if andar_atual = indoAndarQUATRO then
+        return indoAndarTRES;
+      elsif andar_atual = indoAndarTRES then
+        return indoAndarDOIS;
+      elsif andar_atual = indoAndarDOIS then
+        return indoAndarUM;
       else
         return andar_atual;
       end if;
@@ -74,7 +74,7 @@ begin
   process(reset, clock)
     begin
         if reset = &apos;1&apos; then
-            y &lt;= andarUM;
+            y &lt;= indoAndarUM;
             parado &lt;= &apos;1&apos;;
         elsif clock&apos;event and clock = &apos;1&apos; then
             if (andarUM = &apos;1&apos; and andarDOIS = &apos;0&apos; and andarTRES = &apos;0&apos; and andarQUATRO = &apos;0&apos;) then
@@ -87,7 +87,7 @@ begin
             elsif (andarUM = &apos;0&apos; and andarDOIS = &apos;1&apos; and andarTRES = &apos;0&apos; and andarQUATRO = &apos;0&apos;) then
                 if (y /= indoAndarDOIS) then
                     parado &lt;= &apos;0&apos;;
-                    if(y = andarUM) then
+                    if(y = indoAndarUM) then
                         y &lt;= subir(y);
                     else 
                         y &lt;= descer(y);
@@ -114,13 +114,14 @@ begin
                     parado &lt;= &apos;1&apos;;
                 end if;
             end if;
+        end if;
   end process;
   process(y)
     begin
-      andarUM &lt;= &apos;0&apos;;    
-      andarDOIS &lt;= &apos;0&apos;;
-      andarTRES &lt;= &apos;0&apos;;
-      andarQUATRO &lt;= &apos;0&apos;;
+      outAndarUM &lt;= &apos;0&apos;;    
+      outAndarDOIS &lt;= &apos;0&apos;;
+      outAndarTRES &lt;= &apos;0&apos;;
+      outAndarQUATRO &lt;= &apos;0&apos;;
         if y = indoAndarUM then
             outAndarUM &lt;= &apos;1&apos;;    
         elsif y = indoAndarDOIS then
@@ -135,7 +136,7 @@ end arch;</string>
         </entry>
         <entry>
           <string>Width</string>
-          <int>5</int>
+          <int>18</int>
         </entry>
         <entry>
           <string>externalOutputs</string>
@@ -212,7 +213,7 @@ end arch;</string>
           <string>1</string>
         </entry>
       </elementAttributes>
-      <pos x="1080" y="300"/>
+      <pos x="1380" y="300"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -222,7 +223,7 @@ end arch;</string>
           <string>2</string>
         </entry>
       </elementAttributes>
-      <pos x="1080" y="360"/>
+      <pos x="1380" y="360"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -232,7 +233,7 @@ end arch;</string>
           <string>3</string>
         </entry>
       </elementAttributes>
-      <pos x="1080" y="420"/>
+      <pos x="1380" y="420"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -242,7 +243,7 @@ end arch;</string>
           <string>4</string>
         </entry>
       </elementAttributes>
-      <pos x="1080" y="480"/>
+      <pos x="1380" y="480"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -252,7 +253,7 @@ end arch;</string>
           <string>Parado</string>
         </entry>
       </elementAttributes>
-      <pos x="980" y="540"/>
+      <pos x="1280" y="540"/>
     </visualElement>
   </visualElements>
   <wires>
@@ -273,32 +274,32 @@ end arch;</string>
       <p2 x="800" y="480"/>
     </wire>
     <wire>
-      <p1 x="1020" y="480"/>
-      <p2 x="1080" y="480"/>
+      <p1 x="1320" y="480"/>
+      <p2 x="1380" y="480"/>
     </wire>
     <wire>
       <p1 x="600" y="420"/>
       <p2 x="800" y="420"/>
     </wire>
     <wire>
-      <p1 x="900" y="420"/>
-      <p2 x="1080" y="420"/>
+      <p1 x="1160" y="420"/>
+      <p2 x="1380" y="420"/>
     </wire>
     <wire>
-      <p1 x="1020" y="360"/>
-      <p2 x="1080" y="360"/>
+      <p1 x="1320" y="360"/>
+      <p2 x="1380" y="360"/>
     </wire>
     <wire>
       <p1 x="580" y="460"/>
       <p2 x="800" y="460"/>
     </wire>
     <wire>
-      <p1 x="900" y="460"/>
-      <p2 x="940" y="460"/>
+      <p1 x="1160" y="460"/>
+      <p2 x="1240" y="460"/>
     </wire>
     <wire>
-      <p1 x="960" y="300"/>
-      <p2 x="1080" y="300"/>
+      <p1 x="1260" y="300"/>
+      <p2 x="1380" y="300"/>
     </wire>
     <wire>
       <p1 x="640" y="400"/>
@@ -309,8 +310,8 @@ end arch;</string>
       <p2 x="580" y="400"/>
     </wire>
     <wire>
-      <p1 x="900" y="400"/>
-      <p2 x="1020" y="400"/>
+      <p1 x="1160" y="400"/>
+      <p2 x="1320" y="400"/>
     </wire>
     <wire>
       <p1 x="540" y="560"/>
@@ -321,32 +322,28 @@ end arch;</string>
       <p2 x="800" y="440"/>
     </wire>
     <wire>
-      <p1 x="900" y="440"/>
-      <p2 x="1020" y="440"/>
+      <p1 x="1160" y="440"/>
+      <p2 x="1320" y="440"/>
     </wire>
     <wire>
       <p1 x="700" y="380"/>
       <p2 x="800" y="380"/>
     </wire>
     <wire>
-      <p1 x="900" y="380"/>
-      <p2 x="960" y="380"/>
+      <p1 x="1160" y="380"/>
+      <p2 x="1260" y="380"/>
     </wire>
     <wire>
       <p1 x="540" y="220"/>
       <p2 x="640" y="220"/>
     </wire>
     <wire>
-      <p1 x="940" y="540"/>
-      <p2 x="980" y="540"/>
+      <p1 x="1240" y="540"/>
+      <p2 x="1280" y="540"/>
     </wire>
     <wire>
       <p1 x="640" y="220"/>
       <p2 x="640" y="400"/>
-    </wire>
-    <wire>
-      <p1 x="960" y="300"/>
-      <p2 x="960" y="380"/>
     </wire>
     <wire>
       <p1 x="580" y="400"/>
@@ -357,6 +354,18 @@ end arch;</string>
       <p2 x="580" y="480"/>
     </wire>
     <wire>
+      <p1 x="1240" y="460"/>
+      <p2 x="1240" y="540"/>
+    </wire>
+    <wire>
+      <p1 x="1320" y="360"/>
+      <p2 x="1320" y="400"/>
+    </wire>
+    <wire>
+      <p1 x="1320" y="440"/>
+      <p2 x="1320" y="480"/>
+    </wire>
+    <wire>
       <p1 x="600" y="320"/>
       <p2 x="600" y="420"/>
     </wire>
@@ -365,20 +374,12 @@ end arch;</string>
       <p2 x="600" y="560"/>
     </wire>
     <wire>
+      <p1 x="1260" y="300"/>
+      <p2 x="1260" y="380"/>
+    </wire>
+    <wire>
       <p1 x="700" y="160"/>
       <p2 x="700" y="380"/>
-    </wire>
-    <wire>
-      <p1 x="940" y="460"/>
-      <p2 x="940" y="540"/>
-    </wire>
-    <wire>
-      <p1 x="1020" y="360"/>
-      <p2 x="1020" y="400"/>
-    </wire>
-    <wire>
-      <p1 x="1020" y="440"/>
-      <p2 x="1020" y="480"/>
     </wire>
   </wires>
   <measurementOrdering/>
