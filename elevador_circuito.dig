@@ -7,12 +7,16 @@
       <elementName>External</elementName>
       <elementAttributes>
         <entry>
+          <string>applicationType</string>
+          <appType>GHDL</appType>
+        </entry>
+        <entry>
           <string>Label</string>
           <string>elevador</string>
         </entry>
         <entry>
-          <string>applicationType</string>
-          <appType>GHDL</appType>
+          <string>externalInputs</string>
+          <string>clock,reset,andarUM,andarDOIS,andarTRES,andarQUATRO</string>
         </entry>
         <entry>
           <string>Code</string>
@@ -32,54 +36,113 @@ entity elevador is
     outAndarDOIS : out std_logic;
     outAndarTRES : out std_logic;
     outAndarQUATRO : out std_logic;
-    parado : out std_logic;
+    parado : out std_logic
   );
+end elevador ; 
 
-end entity;
+architecture arch of elevador is
+  type tipo_estado is ( indoAndarUM, indoAndarDOIS, indoAndarTRES, indoAndarQUATRO);
+  signal y : tipoEstado;
 
-architecture my_architecture of elevador is
+  function subir (andar_atual : in tipoEstado) return tipoEstado is
+    begin
+      if andar_atual = andarUM then
+        return andarDOIS;
+      elsif andar_atual = andarDOIS then
+        return andarTRES;
+      elsif andar_atual = andarTRES then
+        return andarQUATRO;
+      else
+        return andar_atual;
+      end if;
+  end subir;
 
-function subir (andar_atual : in integer) return integer is
+  function descer (andar_atual : in tipoEstado) return tipoEstado is
+    begin
+      if andar_atual = andarQUATRO then
+        return andarTRES;
+      elsif andar_atual = andarTRES then
+        return andarDOIS;
+      elsif andar_atual = andarDOIS then
+        return andarUM;
+      else
+        return andar_atual;
+      end if;
+  end descer;
+
 begin
-  if andar_atual = 1 then
-    return 2;
-  elsif andar_atual = 2 then
-    return 3;
-  elsif andar_atual = 3 then
-    return 4;
-  else
-    return andar_atual;
-  end if;
-end function;
-
-function descer (andar_atual : in integer) return integer is
-begin
-  if andar_atual = 4 then
-    return 3;
-  elsif andar_atual = 3 then
-    return 2;
-  elsif andar_atual = 2 then
-    return 1;
-  else
-    return andar_atual;
-  end if;
-end function;
-
-begin
-  process (reset, clock)
-        IF Reset = &apos;1&apos; THEN
-        y &lt;= A ;
-        ELSIF (Clock&apos;EVENT AND Clock = &apos;1&apos;) THEN
-  begin
+  process(reset, clock)
+    begin
+        if reset = &apos;1&apos; then
+            y &lt;= andarUM;
+            parado &lt;= &apos;1&apos;;
+        elsif clock&apos;event and clock = &apos;1&apos; then
+            if (andarUM = &apos;1&apos; and andarDOIS = &apos;0&apos; and andarTRES = &apos;0&apos; and andarQUATRO = &apos;0&apos;) then
+                if (y /= indoAndarUM) then
+                    parado &lt;= &apos;0&apos;;
+                    y &lt;= descer(y);
+                else 
+                    parado &lt;= &apos;1&apos;;
+                end if;
+            elsif (andarUM = &apos;0&apos; and andarDOIS = &apos;1&apos; and andarTRES = &apos;0&apos; and andarQUATRO = &apos;0&apos;) then
+                if (y /= indoAndarDOIS) then
+                    parado &lt;= &apos;0&apos;;
+                    if(y = andarUM) then
+                        y &lt;= subir(y);
+                    else 
+                        y &lt;= descer(y);
+                    end if;
+                else
+                    parado &lt;= &apos;1&apos;;
+                end if;
+            elsif (andarUM = &apos;0&apos; and andarDOIS = &apos;0&apos; and andarTRES = &apos;1&apos; and andarQUATRO = &apos;0&apos;) then
+                if (y /= indoAndarTRES) then
+                    parado &lt;= &apos;0&apos;;
+                    if(y = indoAndarUM or y = indoAndarDOIS) then
+                        y &lt;= subir(y);
+                    else 
+                        y &lt;= descer(y);
+                    end if;
+                else
+                    parado &lt;= &apos;1&apos;;
+                end if;
+            elsif (andarUM = &apos;0&apos; and andarDOIS = &apos;0&apos; and andarTRES = &apos;0&apos; and andarQUATRO = &apos;1&apos;) then
+                if (y /= indoAndarQUATRO) then
+                    parado &lt;= &apos;0&apos;;
+                    y &lt;= subir(y);
+                    else
+                    parado &lt;= &apos;1&apos;;
+                end if;
+            end if;
   end process;
-end architecture;</string>
+  process(y)
+    begin
+      andarUM &lt;= &apos;0&apos;;    
+      andarDOIS &lt;= &apos;0&apos;;
+      andarTRES &lt;= &apos;0&apos;;
+      andarQUATRO &lt;= &apos;0&apos;;
+        if y = indoAndarUM then
+            outAndarUM &lt;= &apos;1&apos;;    
+        elsif y = indoAndarDOIS then
+          outAndarDOIS &lt;= &apos;1&apos;;
+        elsif y = indoAndarTRES then
+          outAndarTRES &lt;= &apos;1&apos;;
+        elsif y = indoAndarQUATRO then
+          outAndarQUATRO &lt;= &apos;1&apos;;
+        end if;
+    end process;
+end arch;</string>
         </entry>
         <entry>
           <string>Width</string>
           <int>5</int>
         </entry>
+        <entry>
+          <string>externalOutputs</string>
+          <string>outAndarUM,outAndarDOIS,outAndarTRES,outAndarQUATRO,parado</string>
+        </entry>
       </elementAttributes>
-      <pos x="720" y="380"/>
+      <pos x="800" y="380"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>
@@ -109,7 +172,7 @@ end architecture;</string>
           <string>1</string>
         </entry>
       </elementAttributes>
-      <pos x="540" y="300"/>
+      <pos x="540" y="320"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>
@@ -119,7 +182,7 @@ end architecture;</string>
           <string>2</string>
         </entry>
       </elementAttributes>
-      <pos x="540" y="360"/>
+      <pos x="540" y="400"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>
@@ -129,7 +192,7 @@ end architecture;</string>
           <string>3</string>
         </entry>
       </elementAttributes>
-      <pos x="540" y="420"/>
+      <pos x="540" y="480"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>
@@ -139,7 +202,7 @@ end architecture;</string>
           <string>4</string>
         </entry>
       </elementAttributes>
-      <pos x="540" y="480"/>
+      <pos x="540" y="560"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -149,7 +212,7 @@ end architecture;</string>
           <string>1</string>
         </entry>
       </elementAttributes>
-      <pos x="980" y="300"/>
+      <pos x="1080" y="300"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -159,7 +222,7 @@ end architecture;</string>
           <string>2</string>
         </entry>
       </elementAttributes>
-      <pos x="980" y="360"/>
+      <pos x="1080" y="360"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -169,7 +232,7 @@ end architecture;</string>
           <string>3</string>
         </entry>
       </elementAttributes>
-      <pos x="980" y="420"/>
+      <pos x="1080" y="420"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -179,7 +242,7 @@ end architecture;</string>
           <string>4</string>
         </entry>
       </elementAttributes>
-      <pos x="980" y="480"/>
+      <pos x="1080" y="480"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -191,11 +254,6 @@ end architecture;</string>
       </elementAttributes>
       <pos x="980" y="540"/>
     </visualElement>
-    <visualElement>
-      <elementName>LED</elementName>
-      <elementAttributes/>
-      <pos x="980" y="600"/>
-    </visualElement>
   </visualElements>
   <wires>
     <wire>
@@ -203,48 +261,124 @@ end architecture;</string>
       <p2 x="700" y="160"/>
     </wire>
     <wire>
-      <p1 x="640" y="400"/>
-      <p2 x="720" y="400"/>
+      <p1 x="540" y="320"/>
+      <p2 x="600" y="320"/>
+    </wire>
+    <wire>
+      <p1 x="540" y="480"/>
+      <p2 x="580" y="480"/>
+    </wire>
+    <wire>
+      <p1 x="600" y="480"/>
+      <p2 x="800" y="480"/>
+    </wire>
+    <wire>
+      <p1 x="1020" y="480"/>
+      <p2 x="1080" y="480"/>
     </wire>
     <wire>
       <p1 x="600" y="420"/>
-      <p2 x="720" y="420"/>
+      <p2 x="800" y="420"/>
     </wire>
     <wire>
-      <p1 x="540" y="360"/>
-      <p2 x="580" y="360"/>
+      <p1 x="900" y="420"/>
+      <p2 x="1080" y="420"/>
+    </wire>
+    <wire>
+      <p1 x="1020" y="360"/>
+      <p2 x="1080" y="360"/>
+    </wire>
+    <wire>
+      <p1 x="580" y="460"/>
+      <p2 x="800" y="460"/>
+    </wire>
+    <wire>
+      <p1 x="900" y="460"/>
+      <p2 x="940" y="460"/>
+    </wire>
+    <wire>
+      <p1 x="960" y="300"/>
+      <p2 x="1080" y="300"/>
+    </wire>
+    <wire>
+      <p1 x="640" y="400"/>
+      <p2 x="800" y="400"/>
+    </wire>
+    <wire>
+      <p1 x="540" y="400"/>
+      <p2 x="580" y="400"/>
+    </wire>
+    <wire>
+      <p1 x="900" y="400"/>
+      <p2 x="1020" y="400"/>
+    </wire>
+    <wire>
+      <p1 x="540" y="560"/>
+      <p2 x="600" y="560"/>
     </wire>
     <wire>
       <p1 x="580" y="440"/>
-      <p2 x="720" y="440"/>
+      <p2 x="800" y="440"/>
+    </wire>
+    <wire>
+      <p1 x="900" y="440"/>
+      <p2 x="1020" y="440"/>
     </wire>
     <wire>
       <p1 x="700" y="380"/>
-      <p2 x="720" y="380"/>
+      <p2 x="800" y="380"/>
+    </wire>
+    <wire>
+      <p1 x="900" y="380"/>
+      <p2 x="960" y="380"/>
     </wire>
     <wire>
       <p1 x="540" y="220"/>
       <p2 x="640" y="220"/>
     </wire>
     <wire>
-      <p1 x="540" y="300"/>
-      <p2 x="600" y="300"/>
+      <p1 x="940" y="540"/>
+      <p2 x="980" y="540"/>
     </wire>
     <wire>
       <p1 x="640" y="220"/>
       <p2 x="640" y="400"/>
     </wire>
     <wire>
-      <p1 x="580" y="360"/>
+      <p1 x="960" y="300"/>
+      <p2 x="960" y="380"/>
+    </wire>
+    <wire>
+      <p1 x="580" y="400"/>
       <p2 x="580" y="440"/>
     </wire>
     <wire>
-      <p1 x="600" y="300"/>
+      <p1 x="580" y="460"/>
+      <p2 x="580" y="480"/>
+    </wire>
+    <wire>
+      <p1 x="600" y="320"/>
       <p2 x="600" y="420"/>
+    </wire>
+    <wire>
+      <p1 x="600" y="480"/>
+      <p2 x="600" y="560"/>
     </wire>
     <wire>
       <p1 x="700" y="160"/>
       <p2 x="700" y="380"/>
+    </wire>
+    <wire>
+      <p1 x="940" y="460"/>
+      <p2 x="940" y="540"/>
+    </wire>
+    <wire>
+      <p1 x="1020" y="360"/>
+      <p2 x="1020" y="400"/>
+    </wire>
+    <wire>
+      <p1 x="1020" y="440"/>
+      <p2 x="1020" y="480"/>
     </wire>
   </wires>
   <measurementOrdering/>
